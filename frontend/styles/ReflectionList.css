@@ -1,0 +1,133 @@
+/* Reflection List Styles */
+.reflection-list {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+}
+
+.reflection-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.reflection-list-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.reflection-sort-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reflection-sort-controls select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background: white;
+  font-size: 0.875rem;
+}
+
+.reflection-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reflection-entry {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  padding: 1rem;
+  background: #f9fafb;
+}
+
+.reflection-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.reflection-entry-id {
+  font-weight: 600;
+  color: #374151;
+}
+
+.reflection-entry-date {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.reflection-entry-encrypted {
+  text-align: center;
+  padding: 1rem;
+}
+
+.reflection-entry-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reflection-entry-text {
+  color: #374151;
+}
+
+.reflection-entry-text strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #1f2937;
+}
+
+.reflection-entry-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.reflection-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reflection-metric-label {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.reflection-metric-value {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.reflection-decrypt-button {
+  padding: 0.5rem 1rem;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reflection-decrypt-button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.reflection-decrypt-button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+

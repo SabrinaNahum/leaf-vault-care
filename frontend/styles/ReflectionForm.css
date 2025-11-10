@@ -1,0 +1,135 @@
+/* Reflection Form Styles */
+.reflection-form {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  padding: 1.5rem;
+}
+
+.reflection-form-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.reflection-form-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.reflection-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.reflection-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.reflection-form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  resize: vertical;
+  font-family: inherit;
+}
+
+.reflection-form-textarea:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.reflection-form-textarea::placeholder {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.reflection-form-character-count {
+  font-size: 0.75rem;
+  color: #6b7280;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+.reflection-form-textarea:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.reflection-form-range {
+  width: 100%;
+  height: 0.5rem;
+  border-radius: 0.25rem;
+  background: #e5e7eb;
+  outline: none;
+}
+
+.reflection-form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+}
+
+.reflection-form-range::-moz-range-thumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+  border: none;
+}
+
+.reflection-form-checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.reflection-form-submit {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reflection-form-button {
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.375rem;
+  color: white;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.reflection-form-button-active {
+  background-color: #2563eb;
+}
+
+.reflection-form-button-active:hover {
+  background-color: #1d4ed8;
+}
+
+.reflection-form-button-active:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #3b82f6;
+  ring-offset: 2px;
+}
+
+.reflection-form-button-disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+

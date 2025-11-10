@@ -1,0 +1,1 @@
+"use strict";exports.id=2572,exports.ids=[2572],exports.modules={32572:(e,t,l)=>{l.d(t,{createWalletClient:()=>i,http:()=>n.d});var r=l(30326),a=l(56186);function i(e){let{key:t="wallet",name:l="Wallet Client",transport:i}=e;return(0,r.e)({...e,key:t,name:l,transport:i,type:"walletClient"}).extend(a.v)}var n=l(89259)}};

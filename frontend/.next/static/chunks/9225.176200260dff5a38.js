@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_N_E=self.webpackChunk_N_E||[]).push([[9225],{9225:function(e,t,n){n.d(t,{createWalletClient:function(){return r},http:function(){return a.d}});var l=n(82538),u=n(23409);function r(e){let{key:t="wallet",name:n="Wallet Client",transport:r}=e;return(0,l.e)({...e,key:t,name:n,transport:r,type:"walletClient"}).extend(u.v)}var a=n(79516)}}]);
