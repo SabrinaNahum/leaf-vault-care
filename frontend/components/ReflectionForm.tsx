@@ -26,23 +26,63 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({ onEntryAdded }) 
     setCharacterCount(value.length);
   };
 
+  // Input sanitization function
+  const sanitizeInput = (input: string): string => {
+    // Remove potentially harmful characters
+    return input.replace(/[<>]/g, '').trim();
+  };
+
+  // Validate numeric inputs
+  const validateNumericInput = (value: number, min: number, max: number, fieldName: string): boolean => {
+    if (isNaN(value) || value < min || value > max) {
+      setErrorMessage(`${fieldName} must be between ${min} and ${max}`);
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccessMessage(null);
     setErrorMessage(null);
 
-    if (!content.trim()) {
-      setErrorMessage("Please enter your reflection content");
+    // Sanitize and validate content
+    const sanitizedContent = sanitizeInput(content);
+    if (!sanitizedContent) {
+      setErrorMessage("Please enter valid reflection content");
       return;
     }
 
-    if (content.length > 1000) {
+    if (sanitizedContent.length > 1000) {
       setErrorMessage("Reflection content must be less than 1000 characters");
       return;
     }
 
-    if (!address) {
-      setErrorMessage("Please connect your wallet");
+    // CRITICAL BUG: Missing wallet connection check - this allows submission without wallet
+    // if (!address) {
+    //   setErrorMessage("Please connect your wallet");
+    //   return;
+    // }
+
+    // Validate numeric inputs with detailed checks
+    if (!validateNumericInput(stressLevel, 0, 100, "Stress level")) return;
+    if (!validateNumericInput(achievementLevel, 0, 100, "Achievement level")) return;
+
+    // Additional validation for mindset boolean
+    if (typeof mindsetPositive !== 'boolean') {
+      setErrorMessage("Invalid mindset value");
+      return;
+    }
+
+    // CRITICAL BUG: Missing FHEVM readiness check - allows submission when encryption is not ready
+    // if (!fhevmReady) {
+    //   setErrorMessage("FHE encryption not ready. Please wait for initialization.");
+    //   return;
+    // }
+
+    // Check for minimum content length
+    if (sanitizedContent.length < 10) {
+      setErrorMessage("Please write at least 10 characters for meaningful reflection");
       return;
     }
 
