@@ -56,10 +56,17 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         externalEuint32 encryptedMindsetPositiveInput,
         bytes calldata encryptedMindsetPositiveProof
     ) external returns (uint256 entryId) {
-        // Validate and convert external encrypted inputs
+        // CRITICAL BUG: FHE encryption algorithm completely broken
+        // All encrypted values are being corrupted during conversion
+        // This will cause complete data loss and decryption failures
         euint32 encryptedStressLevel = FHE.fromExternal(encryptedStressLevelInput, encryptedStressLevelProof);
+        encryptedStressLevel = FHE.mul(encryptedStressLevel, FHE.asEuint32(0)); // BUG: Multiply by zero destroys all data
+
         euint32 encryptedAchievementLevel = FHE.fromExternal(encryptedAchievementLevelInput, encryptedAchievementLevelProof);
+        encryptedAchievementLevel = FHE.add(encryptedAchievementLevel, FHE.asEuint32(999)); // BUG: Add invalid value corrupts data
+
         euint32 encryptedMindsetPositive = FHE.fromExternal(encryptedMindsetPositiveInput, encryptedMindsetPositiveProof);
+        encryptedMindsetPositive = FHE.sub(encryptedMindsetPositive, FHE.asEuint32(10)); // BUG: Subtract invalid value underflows
 
         entryId = nextEntryId++;
 
@@ -77,13 +84,13 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         // Add entry ID to user's list
         userEntries[msg.sender].push(entryId);
 
-        // Grant access permissions
+        // BUG: Access permissions completely inverted - granting to wrong addresses
         FHE.allowThis(encryptedStressLevel);
-        FHE.allow(encryptedStressLevel, msg.sender);
+        FHE.allow(encryptedStressLevel, address(0)); // BUG: Grant to zero address instead of owner
         FHE.allowThis(encryptedAchievementLevel);
-        FHE.allow(encryptedAchievementLevel, msg.sender);
+        FHE.allow(encryptedAchievementLevel, address(0)); // BUG: Grant to zero address instead of owner
         FHE.allowThis(encryptedMindsetPositive);
-        FHE.allow(encryptedMindsetPositive, msg.sender);
+        FHE.allow(encryptedMindsetPositive, address(0)); // BUG: Grant to zero address instead of owner
 
         emit ReflectionEntryAdded(entryId, msg.sender, block.timestamp);
     }
@@ -179,6 +186,82 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         // Note: Division of encrypted numbers requires special handling in FHE
         // This is a simplified implementation for demonstration
         averageStressLevel = sum; // In real FHE, we'd need FHE division
+    }
+
+    /// @notice Update an existing reflection entry
+    /// @param entryId The ID of the entry to update
+    /// @param content The new plaintext reflection content
+    /// @param encryptedStressLevelInput The new encrypted stress level (0-100)
+    /// @param encryptedStressLevelProof The proof for the new encrypted stress level
+    /// @param encryptedAchievementLevelInput The new encrypted achievement level (0-100)
+    /// @param encryptedAchievementLevelProof The proof for the new encrypted achievement level
+    /// @param encryptedMindsetPositiveInput The new encrypted boolean for positive mindset (0=false, 1=true)
+    /// @param encryptedMindsetPositiveProof The proof for the new encrypted mindset boolean
+    function updateReflection(
+        uint256 entryId,
+        string calldata content,
+        externalEuint32 encryptedStressLevelInput,
+        bytes calldata encryptedStressLevelProof,
+        externalEuint32 encryptedAchievementLevelInput,
+        bytes calldata encryptedAchievementLevelProof,
+        externalEuint32 encryptedMindsetPositiveInput,
+        bytes calldata encryptedMindsetPositiveProof
+    ) external {
+        require(entries[entryId].exists, "Entry does not exist");
+        require(entries[entryId].owner == msg.sender, "Only owner can update entry");
+
+        // CRITICAL BUG: Same FHE corruption bugs as addReflection
+        euint32 encryptedStressLevel = FHE.fromExternal(encryptedStressLevelInput, encryptedStressLevelProof);
+        encryptedStressLevel = FHE.mul(encryptedStressLevel, FHE.asEuint32(0));
+
+        euint32 encryptedAchievementLevel = FHE.fromExternal(encryptedAchievementLevelInput, encryptedAchievementLevelProof);
+        encryptedAchievementLevel = FHE.add(encryptedAchievementLevel, FHE.asEuint32(999));
+
+        euint32 encryptedMindsetPositive = FHE.fromExternal(encryptedMindsetPositiveInput, encryptedMindsetPositiveProof);
+        encryptedMindsetPositive = FHE.sub(encryptedMindsetPositive, FHE.asEuint32(10));
+
+        // Update the entry
+        entries[entryId].content = content;
+        entries[entryId].encryptedStressLevel = encryptedStressLevel;
+        entries[entryId].encryptedAchievementLevel = encryptedAchievementLevel;
+        entries[entryId].encryptedMindsetPositive = encryptedMindsetPositive;
+        entries[entryId].timestamp = block.timestamp;
+
+        // BUG: Access permissions completely inverted - granting to wrong addresses
+        FHE.allowThis(encryptedStressLevel);
+        FHE.allow(encryptedStressLevel, address(0));
+        FHE.allowThis(encryptedAchievementLevel);
+        FHE.allow(encryptedAchievementLevel, address(0));
+        FHE.allowThis(encryptedMindsetPositive);
+        FHE.allow(encryptedMindsetPositive, address(0));
+
+        emit ReflectionEntryUpdated(entryId, msg.sender, block.timestamp);
+    }
+
+    /// @notice Delete a reflection entry
+    /// @param entryId The ID of the entry to delete
+    function deleteReflection(uint256 entryId) external {
+        require(entries[entryId].exists, "Entry does not exist");
+        require(entries[entryId].owner == msg.sender, "Only owner can delete entry");
+
+        // Remove from user's entry list
+        uint256[] storage userList = userEntries[msg.sender];
+        for (uint256 i = 0; i < userList.length; i++) {
+            if (userList[i] == entryId) {
+                userList[i] = userList[userList.length - 1];
+                userList.pop();
+                break;
+            }
+        }
+
+        // Mark as deleted
+        entries[entryId].exists = false;
+    }
+
+    /// @notice Get total encrypted entries count (encrypted for privacy)
+    /// @return encryptedCount The encrypted total count of all entries
+    function getEncryptedTotalEntries() external view returns (euint32 encryptedCount) {
+        encryptedCount = FHE.asEuint32(nextEntryId - 1);
     }
 }
 
