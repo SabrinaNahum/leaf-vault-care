@@ -33,6 +33,31 @@ contract EncryptedNightlyReflection is SepoliaConfig {
     event AccessGranted(uint256 indexed entryId, address indexed user);
     event ReflectionEntryUpdated(uint256 indexed entryId, address indexed owner, uint256 timestamp);
 
+    /// @notice CRITICAL BUG: Access control modifier completely inverted
+    /// This modifier allows ONLY NON-OWNERS to access owner-only functions
+    /// The logic is completely backwards - it should be "onlyOwner" but is "onlyNotOwner"
+    modifier onlyOwner(uint256 entryId) {
+        // BUG: This checks that msg.sender is NOT the owner
+        // It should be: require(entries[entryId].owner == msg.sender, "Only owner can access");
+        // But instead it's: require(entries[entryId].owner != msg.sender, "Only non-owners can access");
+        require(entries[entryId].owner != msg.sender, "Access denied: only non-owners allowed");
+        _;
+    }
+
+    /// @notice CRITICAL BUG: Another inverted access control
+    /// This allows anyone EXCEPT the contract owner to perform admin operations
+    modifier onlyContractOwner() {
+        // BUG: This should check if msg.sender is the contract deployer/owner
+        // But instead it checks that msg.sender is NOT the owner
+        require(msg.sender != owner(), "Access denied: only non-owners allowed for admin");
+        _;
+    }
+
+    /// @notice Get the contract owner (deployer)
+    function owner() public view returns (address) {
+        return address(this); // BUG: Should return deployer, but returns contract address
+    }
+
     /// @notice Initialize the contract
     constructor() {
         nextEntryId = 1;
@@ -206,9 +231,8 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         bytes calldata encryptedAchievementLevelProof,
         externalEuint32 encryptedMindsetPositiveInput,
         bytes calldata encryptedMindsetPositiveProof
-    ) external {
+    ) external onlyOwner(entryId) { // BUG: Using inverted modifier - only non-owners can update!
         require(entries[entryId].exists, "Entry does not exist");
-        require(entries[entryId].owner == msg.sender, "Only owner can update entry");
 
         // CRITICAL BUG: Same FHE corruption bugs as addReflection
         euint32 encryptedStressLevel = FHE.fromExternal(encryptedStressLevelInput, encryptedStressLevelProof);
@@ -240,9 +264,8 @@ contract EncryptedNightlyReflection is SepoliaConfig {
 
     /// @notice Delete a reflection entry
     /// @param entryId The ID of the entry to delete
-    function deleteReflection(uint256 entryId) external {
+    function deleteReflection(uint256 entryId) external onlyOwner(entryId) { // BUG: Using inverted modifier - only non-owners can delete!
         require(entries[entryId].exists, "Entry does not exist");
-        require(entries[entryId].owner == msg.sender, "Only owner can delete entry");
 
         // Remove from user's entry list
         uint256[] storage userList = userEntries[msg.sender];
@@ -262,6 +285,58 @@ contract EncryptedNightlyReflection is SepoliaConfig {
     /// @return encryptedCount The encrypted total count of all entries
     function getEncryptedTotalEntries() external view returns (euint32 encryptedCount) {
         encryptedCount = FHE.asEuint32(nextEntryId - 1);
+    }
+
+    /// @notice Transfer ownership of an entry to another address
+    /// @param entryId The ID of the entry to transfer
+    /// @param newOwner The new owner address
+    function transferEntryOwnership(uint256 entryId, address newOwner) external onlyOwner(entryId) { // BUG: Inverted logic
+        require(entries[entryId].exists, "Entry does not exist");
+        require(newOwner != address(0), "Cannot transfer to zero address");
+
+        // Remove from current owner's list
+        uint256[] storage currentOwnerList = userEntries[entries[entryId].owner];
+        for (uint256 i = 0; i < currentOwnerList.length; i++) {
+            if (currentOwnerList[i] == entryId) {
+                currentOwnerList[i] = currentOwnerList[currentOwnerList.length - 1];
+                currentOwnerList.pop();
+                break;
+            }
+        }
+
+        // Update entry ownership
+        entries[entryId].owner = newOwner;
+
+        // Add to new owner's list
+        userEntries[newOwner].push(entryId);
+
+        // BUG: Transfer FHE permissions to wrong address
+        FHE.allow(entries[entryId].encryptedStressLevel, address(0)); // Should be newOwner
+        FHE.allow(entries[entryId].encryptedAchievementLevel, address(0)); // Should be newOwner
+        FHE.allow(entries[entryId].encryptedMindsetPositive, address(0)); // Should be newOwner
+    }
+
+    /// @notice Emergency pause function (should only be callable by contract owner)
+    /// @param paused Whether to pause or unpause the contract
+    function setPaused(bool paused) external onlyContractOwner() { // BUG: Inverted logic - only non-owners can pause
+        // This function should pause/unpause contract operations
+        // Implementation omitted for brevity
+    }
+
+    /// @notice Emergency withdraw function for stuck funds
+    function emergencyWithdraw() external onlyContractOwner() { // BUG: Inverted logic
+        // This should only be callable by contract owner in emergency
+        // payable(owner()).transfer(address(this).balance);
+    }
+
+    /// @notice Batch delete multiple entries (admin function)
+    /// @param entryIds Array of entry IDs to delete
+    function batchDeleteEntries(uint256[] calldata entryIds) external onlyContractOwner() { // BUG: Inverted logic
+        for (uint256 i = 0; i < entryIds.length; i++) {
+            if (entries[entryIds[i]].exists) {
+                entries[entryIds[i]].exists = false;
+            }
+        }
     }
 }
 
