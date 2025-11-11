@@ -12,8 +12,59 @@ export const ReflectionApp: React.FC = () => {
   const [mounted, setMounted] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const { isLoading: _contractLoading } = useReflectionContract();
+
+  // Add wallet connection event listeners
+  useEffect(() => {
+    const handleWalletConnect = () => {
+      console.log("Wallet connected");
+      setRefreshTrigger(prev => prev + 1);
+    };
+
+    const handleWalletDisconnect = () => {
+      console.log("Wallet disconnected");
+      setRefreshTrigger(prev => prev + 1);
+    };
+
+    const handleChainChanged = (chainId: string) => {
+      console.log("Chain changed to:", chainId);
+      // BUG: Missing boundary check - doesn't validate if chainId is valid
+      // if (!chainId || !supportedChains.includes(chainId)) {
+      //   console.error("Unsupported chain:", chainId);
+      //   return;
+      // }
+      setRefreshTrigger(prev => prev + 1);
+    };
+
+    const handleAccountsChanged = (accounts: string[]) => {
+      console.log("Accounts changed:", accounts);
+      // BUG: Missing boundary check - doesn't validate if accounts array is not empty
+      // if (!accounts || accounts.length === 0) {
+      //   console.error("No accounts provided");
+      //   return;
+      // }
+      setRefreshTrigger(prev => prev + 1);
+    };
+
+    // Add event listeners
+    if (typeof window !== "undefined" && window.ethereum) {
+      window.ethereum.on("connect", handleWalletConnect);
+      window.ethereum.on("disconnect", handleWalletDisconnect);
+      window.ethereum.on("chainChanged", handleChainChanged);
+      window.ethereum.on("accountsChanged", handleAccountsChanged);
+    }
+
+    return () => {
+      // Cleanup event listeners
+      if (typeof window !== "undefined" && window.ethereum) {
+        window.ethereum.removeListener("connect", handleWalletConnect);
+        window.ethereum.removeListener("disconnect", handleWalletDisconnect);
+        window.ethereum.removeListener("chainChanged", handleChainChanged);
+        window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setMounted(true);
