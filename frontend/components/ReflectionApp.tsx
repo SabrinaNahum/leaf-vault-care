@@ -29,21 +29,21 @@ export const ReflectionApp: React.FC = () => {
 
     const handleChainChanged = (chainId: string) => {
       console.log("Chain changed to:", chainId);
-      // BUG: Missing boundary check - doesn't validate if chainId is valid
-      // if (!chainId || !supportedChains.includes(chainId)) {
-      //   console.error("Unsupported chain:", chainId);
-      //   return;
-      // }
+      // Add boundary check for chainId validity
+      if (!chainId) {
+        console.error("Invalid chainId provided");
+        return;
+      }
       setRefreshTrigger(prev => prev + 1);
     };
 
     const handleAccountsChanged = (accounts: string[]) => {
       console.log("Accounts changed:", accounts);
-      // BUG: Missing boundary check - doesn't validate if accounts array is not empty
-      // if (!accounts || accounts.length === 0) {
-      //   console.error("No accounts provided");
-      //   return;
-      // }
+      // Add boundary check for accounts array
+      if (!accounts || accounts.length === 0) {
+        console.error("No accounts provided");
+        return;
+      }
       setRefreshTrigger(prev => prev + 1);
     };
 
