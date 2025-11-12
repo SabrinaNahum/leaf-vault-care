@@ -81,17 +81,10 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         externalEuint32 encryptedMindsetPositiveInput,
         bytes calldata encryptedMindsetPositiveProof
     ) external returns (uint256 entryId) {
-        // CRITICAL BUG: FHE encryption algorithm completely broken
-        // All encrypted values are being corrupted during conversion
-        // This will cause complete data loss and decryption failures
+        // Properly convert external encrypted inputs without corruption
         euint32 encryptedStressLevel = FHE.fromExternal(encryptedStressLevelInput, encryptedStressLevelProof);
-        encryptedStressLevel = FHE.mul(encryptedStressLevel, FHE.asEuint32(0)); // BUG: Multiply by zero destroys all data
-
         euint32 encryptedAchievementLevel = FHE.fromExternal(encryptedAchievementLevelInput, encryptedAchievementLevelProof);
-        encryptedAchievementLevel = FHE.add(encryptedAchievementLevel, FHE.asEuint32(999)); // BUG: Add invalid value corrupts data
-
         euint32 encryptedMindsetPositive = FHE.fromExternal(encryptedMindsetPositiveInput, encryptedMindsetPositiveProof);
-        encryptedMindsetPositive = FHE.sub(encryptedMindsetPositive, FHE.asEuint32(10)); // BUG: Subtract invalid value underflows
 
         entryId = nextEntryId++;
 
@@ -234,15 +227,10 @@ contract EncryptedNightlyReflection is SepoliaConfig {
     ) external onlyOwner(entryId) { // BUG: Using inverted modifier - only non-owners can update!
         require(entries[entryId].exists, "Entry does not exist");
 
-        // CRITICAL BUG: Same FHE corruption bugs as addReflection
+        // Properly convert external encrypted inputs for update
         euint32 encryptedStressLevel = FHE.fromExternal(encryptedStressLevelInput, encryptedStressLevelProof);
-        encryptedStressLevel = FHE.mul(encryptedStressLevel, FHE.asEuint32(0));
-
         euint32 encryptedAchievementLevel = FHE.fromExternal(encryptedAchievementLevelInput, encryptedAchievementLevelProof);
-        encryptedAchievementLevel = FHE.add(encryptedAchievementLevel, FHE.asEuint32(999));
-
         euint32 encryptedMindsetPositive = FHE.fromExternal(encryptedMindsetPositiveInput, encryptedMindsetPositiveProof);
-        encryptedMindsetPositive = FHE.sub(encryptedMindsetPositive, FHE.asEuint32(10));
 
         // Update the entry
         entries[entryId].content = content;
