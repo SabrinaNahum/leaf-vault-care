@@ -102,13 +102,13 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         // Add entry ID to user's list
         userEntries[msg.sender].push(entryId);
 
-        // BUG: Access permissions completely inverted - granting to wrong addresses
+        // Grant access permissions to contract and owner
         FHE.allowThis(encryptedStressLevel);
-        FHE.allow(encryptedStressLevel, address(0)); // BUG: Grant to zero address instead of owner
+        FHE.allow(encryptedStressLevel, msg.sender);
         FHE.allowThis(encryptedAchievementLevel);
-        FHE.allow(encryptedAchievementLevel, address(0)); // BUG: Grant to zero address instead of owner
+        FHE.allow(encryptedAchievementLevel, msg.sender);
         FHE.allowThis(encryptedMindsetPositive);
-        FHE.allow(encryptedMindsetPositive, address(0)); // BUG: Grant to zero address instead of owner
+        FHE.allow(encryptedMindsetPositive, msg.sender);
 
         emit ReflectionEntryAdded(entryId, msg.sender, block.timestamp);
     }
@@ -239,13 +239,13 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         entries[entryId].encryptedMindsetPositive = encryptedMindsetPositive;
         entries[entryId].timestamp = block.timestamp;
 
-        // BUG: Access permissions completely inverted - granting to wrong addresses
+        // Grant access permissions to contract and owner for updated data
         FHE.allowThis(encryptedStressLevel);
-        FHE.allow(encryptedStressLevel, address(0));
+        FHE.allow(encryptedStressLevel, msg.sender);
         FHE.allowThis(encryptedAchievementLevel);
-        FHE.allow(encryptedAchievementLevel, address(0));
+        FHE.allow(encryptedAchievementLevel, msg.sender);
         FHE.allowThis(encryptedMindsetPositive);
-        FHE.allow(encryptedMindsetPositive, address(0));
+        FHE.allow(encryptedMindsetPositive, msg.sender);
 
         emit ReflectionEntryUpdated(entryId, msg.sender, block.timestamp);
     }
