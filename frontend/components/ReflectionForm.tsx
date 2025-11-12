@@ -58,11 +58,11 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({ onEntryAdded }) 
       return;
     }
 
-    // CRITICAL BUG: Missing wallet connection check - this allows submission without wallet
-    // if (!address) {
-    //   setErrorMessage("Please connect your wallet");
-    //   return;
-    // }
+    // Restore wallet connection check
+    if (!address) {
+      setErrorMessage("Please connect your wallet");
+      return;
+    }
 
     // Validate numeric inputs with detailed checks
     if (!validateNumericInput(stressLevel, 0, 100, "Stress level")) return;
@@ -74,11 +74,11 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({ onEntryAdded }) 
       return;
     }
 
-    // CRITICAL BUG: Missing FHEVM readiness check - allows submission when encryption is not ready
-    // if (!fhevmReady) {
-    //   setErrorMessage("FHE encryption not ready. Please wait for initialization.");
-    //   return;
-    // }
+    // Restore FHEVM readiness check
+    if (!fhevmReady) {
+      setErrorMessage("FHE encryption not ready. Please wait for initialization.");
+      return;
+    }
 
     // Check for minimum content length
     if (sanitizedContent.length < 10) {
