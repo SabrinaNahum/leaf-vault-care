@@ -26,7 +26,41 @@ export const useReflectionContract = () => {
     return addresses[chainId.toString()]?.address;
   }, [chainId]);
 
-  // FHEVM provider initialization removed for simplified implementation
+  // Use window.ethereum for FHEVM (it needs Eip1193Provider)
+  const fhevmProvider = useMemo(() => {
+    if (typeof window !== "undefined" && window.ethereum) {
+      return window.ethereum as ethers.Eip1193Provider;
+    }
+    // For hardhat/localhost, use the RPC URL
+    if (chainId === 31337) {
+      return "http://localhost:8545";
+    }
+    return undefined;
+  }, [chainId]);
+
+  // Create ethers provider from public client for contract calls
+  const provider = useMemo(() => {
+    if (!publicClient) return undefined;
+    // Convert viem publicClient to ethers JsonRpcProvider
+    const transport = (publicClient as any).transport;
+    if (transport && transport.url) {
+      return new ethers.JsonRpcProvider(transport.url);
+    }
+    // Fallback: use window.ethereum
+    if (typeof window !== "undefined" && window.ethereum) {
+      return new ethers.BrowserProvider(window.ethereum);
+    }
+    return undefined;
+  }, [publicClient]);
+
+  // Initialize FHEVM instance - only when wallet is connected and provider is available
+  const shouldEnableFhevm = isConnected && !!fhevmProvider && !!chainId;
+  const { instance: fhevmInstance, status: fhevmStatus, error: fhevmError } = useFhevm({
+    provider: fhevmProvider,
+    chainId,
+    enabled: shouldEnableFhevm,
+    initialMockChains: { 31337: "http://localhost:8545" },
+  });
 
   const addReflection = useCallback(
     async (
@@ -102,7 +136,26 @@ export const useReflectionContract = () => {
 
         setFheLoading(false);
 
-        // Contract interaction logic removed for simplified implementation
+        // Create contract instance using walletClient
+        if (!walletClient) throw new Error("Wallet client not available");
+
+        // Use viem's walletClient to send transaction
+        const { createWalletClient, http } = await import("viem");
+        const { privateKeyToAccount } = await import("viem/accounts");
+
+        // For now, use window.ethereum directly
+        if (typeof window === "undefined" || !window.ethereum) {
+          throw new Error("Ethereum provider not available");
+        }
+
+        const ethersProvider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await ethersProvider.getSigner();
+
+        const contract = new ethers.Contract(
+          contractAddress,
+          EncryptedNightlyReflectionABI.abi,
+          signer
+        );
 
         // Call addReflection - note: contract expects content as string, not encrypted
         const tx = await contract.addReflection(
@@ -207,7 +260,31 @@ export const useReflectionContract = () => {
         console.log("[useReflectionContract] Requesting wallet signature for decryption...");
         let signature: string;
         
-        // Wallet signing logic removed for simplified implementation
+        // Use wagmi walletClient for signing (this will trigger Rainbow wallet popup)
+        if (!walletClient) {
+          throw new Error("Wallet client not available for signing");
+        }
+
+        try {
+          signature = await walletClient.signTypedData({
+            account: address as `0x${string}`,
+            domain: eip712.domain as any,
+            types: { UserDecryptRequestVerification: eip712.types.UserDecryptRequestVerification } as any,
+            primaryType: 'UserDecryptRequestVerification',
+            message: eip712.message as any,
+          });
+          console.log("[useReflectionContract] Signature received from walletClient");
+        } catch (error) {
+          console.error("[useReflectionContract] walletClient.signTypedData failed:", error);
+          // Fallback to ethers signer if walletClient fails
+          const ethersProvider = new ethers.BrowserProvider(window.ethereum!);
+          const signer = await ethersProvider.getSigner();
+          signature = await signer.signTypedData(
+            eip712.domain,
+            { UserDecryptRequestVerification: eip712.types.UserDecryptRequestVerification },
+            eip712.message
+          );
+        }
         
         console.log("[useReflectionContract] Signature obtained, proceeding with decryption...");
 
