@@ -28,6 +28,9 @@ contract EncryptedNightlyReflection is SepoliaConfig {
     /// @notice Counter for generating unique entry IDs
     uint256 private nextEntryId;
 
+    /// @notice Contract owner (deployer)
+    address private _owner;
+
     /// @notice Events
     event ReflectionEntryAdded(uint256 indexed entryId, address indexed owner, uint256 timestamp);
     event AccessGranted(uint256 indexed entryId, address indexed user);
@@ -55,12 +58,13 @@ contract EncryptedNightlyReflection is SepoliaConfig {
 
     /// @notice Get the contract owner (deployer)
     function owner() public view returns (address) {
-        return address(this); // BUG: Should return deployer, but returns contract address
+        return _owner;
     }
 
     /// @notice Initialize the contract
     constructor() {
         nextEntryId = 1;
+        _owner = msg.sender; // Set deployer as owner
     }
 
     /// @notice Add a new reflection entry with encrypted data
