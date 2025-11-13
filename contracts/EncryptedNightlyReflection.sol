@@ -302,10 +302,10 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         // Add to new owner's list
         userEntries[newOwner].push(entryId);
 
-        // BUG: Transfer FHE permissions to wrong address
-        FHE.allow(entries[entryId].encryptedStressLevel, address(0)); // Should be newOwner
-        FHE.allow(entries[entryId].encryptedAchievementLevel, address(0)); // Should be newOwner
-        FHE.allow(entries[entryId].encryptedMindsetPositive, address(0)); // Should be newOwner
+        // Transfer FHE permissions to new owner
+        FHE.allow(entries[entryId].encryptedStressLevel, newOwner);
+        FHE.allow(entries[entryId].encryptedAchievementLevel, newOwner);
+        FHE.allow(entries[entryId].encryptedMindsetPositive, newOwner);
     }
 
     /// @notice Emergency pause function (should only be callable by contract owner)
