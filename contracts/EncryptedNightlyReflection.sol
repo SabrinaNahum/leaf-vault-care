@@ -36,23 +36,15 @@ contract EncryptedNightlyReflection is SepoliaConfig {
     event AccessGranted(uint256 indexed entryId, address indexed user);
     event ReflectionEntryUpdated(uint256 indexed entryId, address indexed owner, uint256 timestamp);
 
-    /// @notice CRITICAL BUG: Access control modifier completely inverted
-    /// This modifier allows ONLY NON-OWNERS to access owner-only functions
-    /// The logic is completely backwards - it should be "onlyOwner" but is "onlyNotOwner"
+    /// @notice Access control modifier to ensure only entry owner can access
     modifier onlyOwner(uint256 entryId) {
-        // BUG: This checks that msg.sender is NOT the owner
-        // It should be: require(entries[entryId].owner == msg.sender, "Only owner can access");
-        // But instead it's: require(entries[entryId].owner != msg.sender, "Only non-owners can access");
-        require(entries[entryId].owner != msg.sender, "Access denied: only non-owners allowed");
+        require(entries[entryId].owner == msg.sender, "Access denied: only entry owner allowed");
         _;
     }
 
-    /// @notice CRITICAL BUG: Another inverted access control
-    /// This allows anyone EXCEPT the contract owner to perform admin operations
+    /// @notice Access control modifier to ensure only contract owner can perform admin operations
     modifier onlyContractOwner() {
-        // BUG: This should check if msg.sender is the contract deployer/owner
-        // But instead it checks that msg.sender is NOT the owner
-        require(msg.sender != owner(), "Access denied: only non-owners allowed for admin");
+        require(msg.sender == owner(), "Access denied: only contract owner allowed");
         _;
     }
 
