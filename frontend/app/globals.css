@@ -33,7 +33,13 @@ body {
 .app-container {
   min-height: 100vh;
   background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
-  padding: 2rem 0;
+  padding: 1rem 0;
+}
+
+@media (min-width: 640px) {
+  .app-container {
+    padding: 2rem 0;
+  }
 }
 
 .main-content {
@@ -45,16 +51,28 @@ body {
 .content-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .content-wrapper {
+    gap: 2rem;
+  }
 }
 
 .title-section {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .title-section {
+    margin-bottom: 2rem;
+  }
 }
 
 .main-title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin-bottom: 1rem;
   background: linear-gradient(45deg, var(--accent-primary), var(--accent-secondary));
@@ -63,34 +81,64 @@ body {
   background-clip: text;
 }
 
+@media (min-width: 768px) {
+  .main-title {
+    font-size: 2.5rem;
+  }
+}
+
 .main-subtitle {
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: var(--text-secondary);
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.6;
 }
 
+@media (min-width: 640px) {
+  .main-subtitle {
+    font-size: 1.125rem;
+  }
+}
+
 .content-sections {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .content-sections {
+    gap: 2rem;
+  }
 }
 
 .connect-card {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.75rem;
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
   backdrop-filter: blur(10px);
 }
 
+@media (min-width: 640px) {
+  .connect-card {
+    padding: 2rem;
+  }
+}
+
 .connect-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
   color: var(--text-primary);
+}
+
+@media (min-width: 640px) {
+  .connect-title {
+    font-size: 1.5rem;
+  }
 }
 
 .connect-subtitle {
