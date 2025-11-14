@@ -32,9 +32,10 @@ contract EncryptedNightlyReflection is SepoliaConfig {
     address private _owner;
 
     /// @notice Events
-    event ReflectionEntryAdded(uint256 indexed entryId, address indexed owner, uint256 timestamp);
+    event ReflectionEntryAdded(uint256 indexed entryId, address indexed owner, uint256 indexed timestamp);
     event AccessGranted(uint256 indexed entryId, address indexed user);
     event ReflectionEntryUpdated(uint256 indexed entryId, address indexed owner, uint256 timestamp);
+    event EntryOwnershipTransferred(uint256 indexed entryId, address indexed previousOwner, address indexed newOwner);
 
     /// @notice Access control modifier to ensure only entry owner can access
     modifier onlyOwner(uint256 entryId) {
@@ -271,6 +272,25 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         encryptedCount = FHE.asEuint32(nextEntryId - 1);
     }
 
+    /// @notice Estimate gas cost for adding a reflection entry
+    /// @return estimatedGas The estimated gas cost for addReflection
+    function estimateAddReflectionGas() external pure returns (uint256 estimatedGas) {
+        // Base gas estimation for FHE operations and storage
+        // This is a simplified estimation - actual gas costs vary with input size
+        estimatedGas = 250000; // Base FHE operations
+        estimatedGas += 50000;  // Storage operations
+        estimatedGas += 20000;  // Event emissions
+        return estimatedGas;
+    }
+
+    /// @notice Get gas-optimized batch size recommendation
+    /// @return optimalBatchSize The recommended batch size for operations
+    function getOptimalBatchSize() external pure returns (uint256 optimalBatchSize) {
+        // Based on gas limits and FHE operation costs
+        // Ethereum block gas limit is ~30M, FHE operations are expensive
+        return 5; // Conservative batch size for FHE operations
+    }
+
     /// @notice Transfer ownership of an entry to another address
     /// @param entryId The ID of the entry to transfer
     /// @param newOwner The new owner address
@@ -289,10 +309,13 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         }
 
         // Update entry ownership
+        address previousOwner = entries[entryId].owner;
         entries[entryId].owner = newOwner;
 
         // Add to new owner's list
         userEntries[newOwner].push(entryId);
+
+        emit EntryOwnershipTransferred(entryId, previousOwner, newOwner);
 
         // Transfer FHE permissions to new owner
         FHE.allow(entries[entryId].encryptedStressLevel, newOwner);
