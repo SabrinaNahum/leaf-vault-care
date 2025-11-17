@@ -60,6 +60,43 @@ const config: HardhatUserConfig = {
       chainId: 31337,
       url: "http://127.0.0.1:8545",
     },
+    mainnet: {
+      accounts: [PRIVATE_KEY],
+      chainId: 1,
+      url: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
+      gasPrice: 20000000000, // 20 gwei
+    },
+    polygon: {
+      accounts: [PRIVATE_KEY],
+      chainId: 137,
+      url: `https://polygon-mainnet.infura.io/v3/${INFURA_API_KEY}`,
+      gasPrice: 40000000000, // 40 gwei
+    },
+    polygonMumbai: {
+      accounts: [PRIVATE_KEY],
+      chainId: 80001,
+      url: `https://polygon-mumbai.infura.io/v3/${INFURA_API_KEY}`,
+    },
+    arbitrum: {
+      accounts: [PRIVATE_KEY],
+      chainId: 42161,
+      url: `https://arbitrum-mainnet.infura.io/v3/${INFURA_API_KEY}`,
+    },
+    arbitrumGoerli: {
+      accounts: [PRIVATE_KEY],
+      chainId: 421613,
+      url: `https://arbitrum-goerli.infura.io/v3/${INFURA_API_KEY}`,
+    },
+    optimism: {
+      accounts: [PRIVATE_KEY],
+      chainId: 10,
+      url: `https://optimism-mainnet.infura.io/v3/${INFURA_API_KEY}`,
+    },
+    optimismGoerli: {
+      accounts: [PRIVATE_KEY],
+      chainId: 420,
+      url: `https://optimism-goerli.infura.io/v3/${INFURA_API_KEY}`,
+    },
   },
   paths: {
     artifacts: "./artifacts",
