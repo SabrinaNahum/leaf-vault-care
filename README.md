@@ -327,6 +327,16 @@ This project is licensed under the **BSD-3-Clause-Clear** license - see the [LIC
 
 **Built with ❤️ using Zama FHEVM**
 
+## 🎬 Demo Video
+
+Watch the full demonstration of Encrypted Nightly Reflection:
+
+[![Encrypted Nightly Reflection Demo](./demo-video.mp4)](./demo-video.mp4)
+
+*Note: Click the image above to play the demo video locally, or [view on GitHub](https://github.com/SabrinaNahum/encrypted-nightly-reflection/blob/main/demo-video.mp4)*
+
+---
+
 *Empowering mental privacy through cryptography*
 
 </div>
