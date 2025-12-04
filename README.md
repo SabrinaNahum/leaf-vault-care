@@ -9,7 +9,7 @@
 
 *A fully homomorphic encryption (FHE) enabled dApp for storing encrypted nightly reflection entries on the blockchain*
 
-[Live Demo](https://encrypted-nightly-reflection.vercel.app/) • [Smart Contract](https://sepolia.etherscan.io/address/0x...) • [Documentation](./docs/)
+[Live Demo](https://number-omega-sepia.vercel.app/) • [Smart Contract](https://sepolia.etherscan.io/address/0x6eA28fFE068e945016CD3040d12Aa19785531cee) • [Documentation](./docs/)
 
 </div>
 
@@ -65,8 +65,8 @@ To empower users with a journaling experience that prioritizes **mental privacy*
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/SabrinaNahum/encrypted-nightly-reflection.git
-cd encrypted-nightly-reflection
+git clone https://github.com/SabrinaNahum/leaf-vault-care.git
+cd leaf-vault-care
 ```
 
 2. **Install dependencies**
@@ -331,9 +331,9 @@ This project is licensed under the **BSD-3-Clause-Clear** license - see the [LIC
 
 Watch the full demonstration of Encrypted Nightly Reflection:
 
-[![Encrypted Nightly Reflection Demo](./demo-video.mp4)](./demo-video.mp4)
+[![Encrypted Nightly Reflection Demo](./number.mp4)](./number.mp4)
 
-*Note: Click the image above to play the demo video locally, or [view on GitHub](https://github.com/SabrinaNahum/encrypted-nightly-reflection/blob/main/demo-video.mp4)*
+*Note: Click the image above to play the demo video locally, or [view on GitHub](https://github.com/SabrinaNahum/leaf-vault-care/blob/main/number.mp4)*
 
 ---
 
