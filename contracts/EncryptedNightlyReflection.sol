@@ -189,7 +189,8 @@ contract EncryptedNightlyReflection is SepoliaConfig {
     /// @notice Get the average stress level for a user across all their entries
     /// @param user The address of the user
     /// @return averageStressLevel The average encrypted stress level
-    function getUserAverageStressLevel(address user) external view returns (euint32 averageStressLevel) {
+    /// @dev Note: This function cannot be view because FHE operations require relayer interaction
+    function getUserAverageStressLevel(address user) external returns (euint32 averageStressLevel) {
         uint256[] memory entryIds = userEntries[user];
         require(entryIds.length > 0, "User has no entries");
 
@@ -201,6 +202,10 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         // Note: Division of encrypted numbers requires special handling in FHE
         // This is a simplified implementation for demonstration
         averageStressLevel = sum; // In real FHE, we'd need FHE division
+        
+        // Allow the caller to decrypt the result
+        FHE.allowThis(averageStressLevel);
+        FHE.allow(averageStressLevel, msg.sender);
     }
 
     /// @notice Update an existing reflection entry
@@ -266,10 +271,12 @@ contract EncryptedNightlyReflection is SepoliaConfig {
         entries[entryId].exists = false;
     }
 
-    /// @notice Get total encrypted entries count (encrypted for privacy)
-    /// @return encryptedCount The encrypted total count of all entries
-    function getEncryptedTotalEntries() external view returns (euint32 encryptedCount) {
-        encryptedCount = FHE.asEuint32(nextEntryId - 1);
+    /// @notice Get total entries count
+    /// @return totalCount The total count of all entries
+    /// @dev Note: In FHE, encryption must be done on the client side. 
+    ///      If encrypted count is needed, encrypt this value on the client before use.
+    function getEncryptedTotalEntries() external view returns (uint256 totalCount) {
+        totalCount = nextEntryId > 0 ? nextEntryId - 1 : 0;
     }
 
     /// @notice Estimate gas cost for adding a reflection entry

@@ -177,12 +177,12 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({ onEntryAdded }) 
 
       <form onSubmit={handleSubmit} className="reflection-form-form">
         {successMessage && (
-          <div className="mb-4 p-3 bg-green-500/20 border border-green-500/50 rounded text-green-200 text-sm">
+          <div className="mb-4 p-4 bg-green-50 border-2 border-green-200 rounded-xl text-green-700 text-sm font-medium shadow-sm">
             ✓ {successMessage}
           </div>
         )}
         {errorMessage && (
-          <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded text-red-200 text-sm">
+          <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-xl text-red-700 text-sm font-medium shadow-sm">
             ✗ {errorMessage}
           </div>
         )}
@@ -200,7 +200,7 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({ onEntryAdded }) 
             disabled={isLoading}
             maxLength={1000}
           />
-          <div className="text-xs text-gray-400 mt-1 text-right">
+          <div className="text-xs text-gray-500 mt-1 text-right font-medium">
             {characterCount}/1000 characters
           </div>
         </div>
@@ -252,7 +252,7 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({ onEntryAdded }) 
 
         <div className="reflection-form-submit">
           {!fhevmReady && fhevmStatus !== "ready" && (
-            <div className="mb-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded text-yellow-200 text-sm">
+            <div className="mb-4 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl text-yellow-700 text-sm font-medium shadow-sm">
               {fhevmStatus === "loading" && "Initializing FHE encryption..."}
               {fhevmStatus === "error" && (() => {
                 const errorMsg = fhevmError?.message?.toLowerCase() || "";
@@ -277,13 +277,15 @@ export const ReflectionForm: React.FC<ReflectionFormProps> = ({ onEntryAdded }) 
                 : "reflection-form-button-active"
             }`}
           >
-            {!fhevmReady
-              ? "Initializing FHE..."
-              : fheLoading
-                ? "Encrypting..."
-                : isLoading
-                  ? "Adding Entry..."
-                  : "Add Reflection Entry"}
+            <span>
+              {!fhevmReady
+                ? "Initializing FHE..."
+                : fheLoading
+                  ? "Encrypting..."
+                  : isLoading
+                    ? "Adding Entry..."
+                    : "Add Reflection Entry"}
+            </span>
           </button>
         </div>
       </form>

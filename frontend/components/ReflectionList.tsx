@@ -119,7 +119,7 @@ export const ReflectionList: React.FC<ReflectionListProps> = ({ refreshTrigger =
     return (
       <div className="reflection-list">
         <h2 className="reflection-list-title">My Reflections</h2>
-        <p className="text-center py-8">Loading entries...</p>
+        <p className="text-center py-8 text-gray-500 font-medium animate-pulse">Loading entries...</p>
       </div>
     );
   }
@@ -128,9 +128,10 @@ export const ReflectionList: React.FC<ReflectionListProps> = ({ refreshTrigger =
     return (
       <div className="reflection-list">
         <h2 className="reflection-list-title">My Reflections</h2>
-        <p className="text-center py-8 text-gray-600">
-          No reflection entries yet. Create your first entry above!
-        </p>
+        <div className="text-center py-12">
+          <p className="text-gray-500 font-medium mb-2">No reflection entries yet.</p>
+          <p className="text-gray-400 text-sm">Create your first entry above to get started!</p>
+        </div>
       </div>
     );
   }
@@ -165,7 +166,7 @@ export const ReflectionList: React.FC<ReflectionListProps> = ({ refreshTrigger =
 
             {entry.encrypted ? (
               <div className="reflection-entry-encrypted">
-                <p className="text-gray-500 mb-4">
+                <p>
                   This entry is encrypted. Click decrypt to view your reflection.
                 </p>
                 <button
@@ -173,28 +174,30 @@ export const ReflectionList: React.FC<ReflectionListProps> = ({ refreshTrigger =
                   disabled={decryptingId === entry.id || isLoading}
                   className="reflection-decrypt-button"
                 >
-                  {decryptingId === entry.id ? "Decrypting..." : "Decrypt Entry"}
+                  <span>
+                    {decryptingId === entry.id ? "Decrypting..." : "Decrypt Entry"}
+                  </span>
                 </button>
               </div>
             ) : (
               <div className="reflection-entry-content">
                 <div className="reflection-entry-text">
                   <strong>Reflection:</strong>
-                  <p>{entry.content}</p>
+                  <p>{entry.content || "No content available"}</p>
                 </div>
                 <div className="reflection-entry-metrics">
                   <div className="reflection-metric">
-                    <span className="reflection-metric-label">Stress Level:</span>
+                    <span className="reflection-metric-label">Stress Level</span>
                     <span className="reflection-metric-value">{entry.stressLevel}%</span>
                   </div>
                   <div className="reflection-metric">
-                    <span className="reflection-metric-label">Achievement Level:</span>
+                    <span className="reflection-metric-label">Achievement Level</span>
                     <span className="reflection-metric-value">{entry.achievementLevel}%</span>
                   </div>
                   <div className="reflection-metric">
-                    <span className="reflection-metric-label">Mindset:</span>
-                    <span className={`reflection-metric-value ${entry.mindsetPositive ? "text-green-600" : "text-red-600"}`}>
-                      {entry.mindsetPositive ? "Positive" : "Needs Adjustment"}
+                    <span className="reflection-metric-label">Mindset</span>
+                    <span className={`reflection-metric-value ${entry.mindsetPositive ? "" : ""}`}>
+                      {entry.mindsetPositive ? "✓ Positive" : "⚠ Needs Adjustment"}
                     </span>
                   </div>
                 </div>

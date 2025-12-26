@@ -82,7 +82,7 @@ export const ReflectionApp: React.FC = () => {
     return (
       <div className="app-container">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-white">Loading...</div>
+          <div className="text-lg font-semibold text-gray-600 animate-pulse">Loading...</div>
         </div>
       </div>
     );
@@ -93,16 +93,19 @@ export const ReflectionApp: React.FC = () => {
       <div className="main-content">
         <div className="content-wrapper">
           <div className="title-section">
-            <h1 className="main-title text-white">
-              Encrypted Nightly Reflection
-            </h1>
-            <p className="main-subtitle text-gray-200">
-              Record your daily reflections with complete privacy. Your thoughts about stress, achievements, and mindset adjustments are encrypted using Zama FHE technology.
-            </p>
-          </div>
-
-          <div className="flex justify-end mb-4">
-            <ConnectButton />
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-4">
+              <div className="flex-1">
+                <h1 className="main-title">
+                  Encrypted Nightly Reflection
+                </h1>
+                <p className="main-subtitle">
+                  Record your daily reflections with complete privacy. Your thoughts about stress, achievements, and mindset adjustments are encrypted using Zama FHE technology.
+                </p>
+              </div>
+              <div className="md:ml-4 flex-shrink-0">
+                <ConnectButton />
+              </div>
+            </div>
           </div>
 
           {!isConnected ? (
