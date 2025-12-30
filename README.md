@@ -9,7 +9,7 @@
 
 *A fully homomorphic encryption (FHE) enabled dApp for storing encrypted nightly reflection entries on the blockchain*
 
-[Live Demo](https://number-omega-sepia.vercel.app/) • [Smart Contract](https://sepolia.etherscan.io/address/0x6eA28fFE068e945016CD3040d12Aa19785531cee) • [Documentation](./docs/)
+[Live Demo](https://leaf-vault-care-pro.vercel.app/) • [Smart Contract](https://sepolia.etherscan.io/address/0x6eA28fFE068e945016CD3040d12Aa19785531cee) • [Documentation](./docs/)
 
 </div>
 
